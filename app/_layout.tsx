@@ -1,24 +1,33 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
+// Alias the navigation one to 'NavProvider'
+import { ThemeProvider as NavProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { AlarmProvider } from '../context/AlarmContext';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+// Import your global CSS file for NativeWind v4
+import "../global.css";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  return (
+    <ThemeProvider>
+      <AlarmProvider>
+        <LayoutContent />
+      </AlarmProvider>
+    </ThemeProvider>
+  );
+}
+
+function LayoutContent() {
+  const { theme } = useTheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+    <NavProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    </NavProvider>
   );
 }
